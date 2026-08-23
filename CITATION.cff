@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this software in your research, please cite it using the metadata below."
+title: "藏文三大方言 G2P (Tibetan Three Dialects G2P): Rule-based Grapheme-to-Phoneme for the three major Tibetan dialects"
+abstract: >-
+  A lightweight, rule-based grapheme-to-phoneme (G2P) converter for written Tibetan
+  that produces Montreal Forced Aligner (MFA) lexicon-format pronunciations for the
+  three major dialect groups — Ü-Tsang (Lhasa), Khams (Dergé), and Amdo (Labrang).
+authors:
+  - family-names: "Khepa-Nyima"
+version: 0.1.0
+date-released: 2026-08-23
+license: Apache-2.0
+url: "https://github.com/Khepa-Nyima/tibetan-three-dialects-g2p"
+repository-code: "https://github.com/Khepa-Nyima/tibetan-three-dialects-g2p"
+keywords:
+  - Tibetan
+  - grapheme-to-phoneme
+  - G2P
+  - text-to-speech
+  - TTS
+  - forced alignment
+  - MFA
+  - low-resource languages
+  - phonetics
+  - Ü-Tsang
+  - Khams
+  - Amdo

@@ -1,0 +1,48 @@
+{
+  "name": "tibetan-three-dialects-g2p",
+  "version": "0.1.0",
+  "description": "藏文三大方言 G2P / Rule-based grapheme-to-phoneme (G2P) for the three major Tibetan dialects (Ü-Tsang, Khams, Amdo) with Montreal Forced Aligner (MFA) lexicon output.",
+  "keywords": [
+    "tibetan",
+    "grapheme-to-phoneme",
+    "g2p",
+    "text-to-speech",
+    "tts",
+    "forced-alignment",
+    "mfa",
+    "phonetics",
+    "low-resource-languages",
+    "u-tsang",
+    "khams",
+    "amdo"
+  ],
+  "license": "Apache-2.0",
+  "main": "tibetan-three-dialects-g2p.js",
+  "bin": {
+    "tibetan-three-dialects-g2p": "cli.js"
+  },
+  "files": [
+    "tibetan-three-dialects-g2p.js",
+    "cli.js",
+    "index.html",
+    "docs/",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/smoke.js",
+    "demo": "echo \"Open index.html in a browser, or run: npx serve .\""
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Khepa-Nyima/tibetan-three-dialects-g2p.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Khepa-Nyima/tibetan-three-dialects-g2p/issues"
+  },
+  "homepage": "https://github.com/Khepa-Nyima/tibetan-three-dialects-g2p#readme"
+}
