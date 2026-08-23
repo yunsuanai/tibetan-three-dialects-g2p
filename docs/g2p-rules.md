@@ -173,7 +173,7 @@ The three panels can be concatenated directly into one MFA `.txt` dictionary fil
 
 ## 7. Known limitations of the rules
 
-- The syllable-slot parser uses membership/length heuristics and can misparse rare or ambiguous spellings (e.g., certain two-letter syllables where the first letter is both a possible prefix and a possible root).
+- The syllable-slot parser uses membership/length heuristics. It correctly handles prefix+root, superscript+root, and root+suffix sequences, but two-letter syllables whose letters belong to overlapping sets remain genuinely ambiguous — e.g. མད (prefix མ + root ད) vs དག (root ད + suffix ག) — and are conservatively read as root + suffix; a lexicon is needed for full disambiguation.
 - Lexical exceptions and loanwords are not modeled.
 - No cross-syllable sandhi, and no handling of ་ -attached particles' contextual readings.
 - Amdo stress and vowel quality are simplified; Ü-Tsang/Khams tone digits are a reduced Chao scheme, not a full prosodic transcription.
@@ -324,7 +324,7 @@ ts tsʰ dz  w  ʈ ʈʰ ʈʂ ʈʂʰ  ɕ ʑ s z  h  ʔ  r l  j
 
 ### 7. 规则的已知局限
 
-- 音节槽位解析使用成员/长度启发式，可能在生僻或歧义拼写上误判（如首字母既是可能前置字又是可能基字的两字母音节）。
+- 音节槽位解析使用成员/长度启发式，已能正确区分“前置字+基字”“上加字+基字”“基字+后加字”等结构；但当两个字母同属多个集合时（如 མད 是“前置字 མ + 基字 ད”，而 དག 是“基字 ད + 后加字 ག”）仍存在固有歧义，暂按“基字+后加字”保守处理，需借助词典才能完全消歧。
 - 未建模词汇例外与借词。
 - 无跨音节连读，也不处理 `་` 所连虚词的语境读音。
 - 安多重音与元音音质作了简化；卫藏/康巴声调数字为简化五度制，非完整韵律转写。

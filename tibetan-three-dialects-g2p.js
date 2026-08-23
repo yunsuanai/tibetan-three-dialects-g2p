@@ -103,11 +103,17 @@
     if (n === 1) {
       root = chars[0];
     } else if (n === 2) {
-      if (SUFFIXES.has(chars[1]) && !PREFIXES.has(chars[0])) {
-        root = chars[0]; suffix = chars[1];
-      } else if (PREFIXES.has(chars[0]) && ROOT_CONSONANTS.indexOf(chars[1]) !== -1) {
-        root = chars[0]; suffix = chars[1];
+      if (!SUFFIXES.has(chars[1])) {
+        // chars[1] is not a suffix letter, so it must be the root consonant.
+        if (PREFIXES.has(chars[0])) {
+          prefix = chars[0]; root = chars[1];
+        } else if (SUPERSCRIPTS.has(chars[0])) {
+          superscript = chars[0]; root = chars[1];
+        } else {
+          root = chars[0]; suffix = chars[1];
+        }
       } else {
+        // chars[1] is a possible suffix: conservative root + suffix reading.
         root = chars[0]; suffix = chars[1];
       }
     } else if (n === 3) {
