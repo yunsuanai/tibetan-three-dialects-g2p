@@ -38,7 +38,7 @@ The 30 root consonants:
 ཀ ཁ ག ང ཅ ཆ ཇ ཉ ཏ ཐ ད ན པ ཕ བ མ ཙ ཚ ཛ ཝ ཞ ཟ འ ཡ ར ལ ཤ ས ཧ ཨ
 ```
 
-The parser assigns slots with simple length- and membership-based heuristics (1–4+ non-subscript consonant letters). These heuristics are deliberately minimal and are the main known source of error on ambiguous or rare spellings.
+The parser peels the post-suffix, suffix, and vowel sign from the right, then parses the remaining head (prefix, superscript, root, subscript) from the left, with a backtrack when nothing remains. Subjoined (stacked) consonant forms are normalized to their full root forms during this process.
 
 ---
 
@@ -173,7 +173,7 @@ The three panels can be concatenated directly into one MFA `.txt` dictionary fil
 
 ## 7. Known limitations of the rules
 
-- The syllable-slot parser uses membership/length heuristics. It correctly handles prefix+root, superscript+root, and root+suffix sequences, but two-letter syllables whose letters belong to overlapping sets remain genuinely ambiguous — e.g. མད (prefix མ + root ད) vs དག (root ད + suffix ག) — and are conservatively read as root + suffix; a lexicon is needed for full disambiguation.
+- The parser extracts suffix(es) and the vowel from the right, then parses the head from the left; the vowel position disambiguates most cases, and subjoined (stacked) forms are normalized. A residual ambiguity remains only for two-consonant syllables **without a written vowel** whose final letter is a suffix letter — e.g. མད (prefix མ + root ད) vs དག (root ད + suffix ག) — which are conservatively read as root + suffix; a lexicon is needed to resolve those.
 - Lexical exceptions and loanwords are not modeled.
 - No cross-syllable sandhi, and no handling of ་ -attached particles' contextual readings.
 - Amdo stress and vowel quality are simplified; Ü-Tsang/Khams tone digits are a reduced Chao scheme, not a full prosodic transcription.
@@ -208,7 +208,7 @@ See the README [limitations](../README.md#limitations-and-disclaimer) section.
 
 三十个基字：`ཀ ཁ ག ང ཅ ཆ ཇ ཉ ཏ ཐ ད ན པ ཕ བ མ ཙ ཚ ཛ ཝ ཞ ཟ འ ཡ ར ལ ཤ ས ཧ ཨ`。
 
-解析器用简单的长度与成员关系启发式来指派槽位，这是生僻或歧义拼写上的主要已知误差来源。
+解析器从右往左依次剥取再后加字、后加字与元音符号，再从左往右解析剩余的音节头（前加字、上加字、基字、下加字），无剩余时回溯；连体（堆叠）辅音形式会还原为标准基字。
 
 ### 3. 音素表
 
@@ -324,7 +324,7 @@ ts tsʰ dz  w  ʈ ʈʰ ʈʂ ʈʂʰ  ɕ ʑ s z  h  ʔ  r l  j
 
 ### 7. 规则的已知局限
 
-- 音节槽位解析使用成员/长度启发式，已能正确区分“前置字+基字”“上加字+基字”“基字+后加字”等结构；但当两个字母同属多个集合时（如 མད 是“前置字 མ + 基字 ད”，而 དག 是“基字 ད + 后加字 ག”）仍存在固有歧义，暂按“基字+后加字”保守处理，需借助词典才能完全消歧。
+- 解析器从右往左剥取后加字与元音，再从左往右解析音节头，元音位置可消解大部分歧义，连体形式也已归一化；仅在**无元音符号**的两辅音音节、且末字母为后加字时仍有歧义（如 མད 是“前加字 མ + 基字 ད”，དག 是“基字 ད + 后加字 ག”），暂按“基字+后加字”保守处理，需借助词典才能完全消歧。
 - 未建模词汇例外与借词。
 - 无跨音节连读，也不处理 `་` 所连虚词的语境读音。
 - 安多重音与元音音质作了简化；卫藏/康巴声调数字为简化五度制，非完整韵律转写。

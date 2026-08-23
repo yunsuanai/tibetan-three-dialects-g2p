@@ -52,4 +52,20 @@ const rka = g2p.parseSyllable(String.fromCharCode(0x0F62, 0x0F40)); // ར (supe
 assert.strictEqual(rka.super, 'ར');
 assert.strictEqual(rka.root, 'ཀ');
 
+// Regression: vowel position disambiguates head vs coda (མདོ = མ prefix + ད root + ོ vowel).
+const mdo = g2p.generate('མདོ');
+assert.deepStrictEqual(phones(mdo.utsang), ['t o55']);
+assert.deepStrictEqual(phones(mdo.khams), ['ʰ tʰ o13']);
+assert.deepStrictEqual(phones(mdo.amdo), ['m d o']);
+
+// Regression: full syllable བསྒྲིགས decomposes into all seven orthographic slots.
+const bsgrigs = g2p.parseSyllable('བསྒྲིགས');
+assert.strictEqual(bsgrigs.prefix, 'བ');
+assert.strictEqual(bsgrigs.super, 'ས');
+assert.strictEqual(bsgrigs.root, 'ག');
+assert.strictEqual(bsgrigs.sub, 'r');
+assert.strictEqual(bsgrigs.vowel, 'i');
+assert.strictEqual(bsgrigs.suffix, 'ག');
+assert.strictEqual(bsgrigs.post, 'ས');
+
 console.log('smoke test passed \u2713');

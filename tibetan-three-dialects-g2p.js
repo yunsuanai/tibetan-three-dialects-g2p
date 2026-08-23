@@ -45,6 +45,13 @@
   var SUFFIXES = new Set(['ག','ང','ད','ན','བ','མ','འ','ར','ལ','ས']);
   var POST_SUFFIXES = new Set(['ད','ས']);
 
+  // Subjoined (stacked) consonant forms → their full root forms.
+  var JOINED_TO_ROOT = {
+    'ྐ':'ཀ','ྑ':'ཁ','ྒ':'ག','ྔ':'ང','ྕ':'ཅ','ྖ':'ཆ','ྗ':'ཇ','ྙ':'ཉ',
+    'ྟ':'ཏ','ྠ':'ཐ','ྡ':'ད','ྣ':'ན','ྤ':'པ','ྥ':'ཕ','ྦ':'བ','ྨ':'མ',
+    'ྩ':'ཙ','ྪ':'ཚ','ྫ':'ཛ','ྴ':'ཤ','ྶ':'ས','ྷ':'ཧ','ྸ':'ཨ'
+  };
+
   // Ü-Tsang & Khams shared root map: [phone, high_tone, aspirated]
   var UT_ROOT_MAP = {
     'ཀ':['k',1,0],'ཁ':['kʰ',1,1],'ག':['kʰ',0,1],'ང':['ŋ',0,0],
@@ -76,59 +83,52 @@
     syl = cleanSyllable(syl);
     if (!syl) return null;
 
-    var vowel = 'a', vowelChar = '';
-    var vc;
-    for (vc in VOWELS) {
-      if (syl.indexOf(vc) !== -1) { vowel = VOWELS[vc]; vowelChar = vc; break; }
+    var prefix = '', superscript = '', root = '', subscript = '', suffix = '', post_suffix = '';
+    var vowel = 'a';
+    var chars = Array.from(syl);
+
+    // 1. Peel post-suffix + suffix from the right (they follow the vowel, so they sit at the end).
+    if (chars.length >= 2 && POST_SUFFIXES.has(chars[chars.length - 1]) && SUFFIXES.has(chars[chars.length - 2])) {
+      post_suffix = chars.pop();
+      suffix = chars.pop();
+    } else if (chars.length >= 1 && SUFFIXES.has(chars[chars.length - 1])) {
+      suffix = chars.pop();
     }
 
-    var consStr = vowelChar ? syl.split(vowelChar).join('') : syl;
-    var chars = Array.from(consStr);
-    var n = chars.length;
-    if (n === 0) return null;
+    // 2. Peel the vowel sign (if present) from the right.
+    if (chars.length >= 1 && VOWELS[chars[chars.length - 1]] !== undefined) {
+      vowel = VOWELS[chars[chars.length - 1]];
+      chars.pop();
+    }
 
-    var prefix = '', superscript = '', root = '', subscript = '', suffix = '', post_suffix = '';
-    var nonSub = [];
-    var i, ch;
-    for (i = 0; i < chars.length; i++) {
-      ch = chars[i];
+    // 3. Backtrack: if nothing is left, the peeled "suffix" was actually the root.
+    if (chars.length === 0) {
+      if (suffix) { root = suffix; suffix = ''; }
+      if (post_suffix) { suffix = post_suffix; post_suffix = ''; }
+      return { raw: syl, prefix: prefix, super: superscript, root: root, sub: subscript, vowel: vowel, suffix: suffix, post: post_suffix };
+    }
+
+    // 4. Parse the head (before the vowel): [prefix] [superscript] root [subscript].
+    var headCons = [];
+    for (var i = 0; i < chars.length; i++) {
+      var ch = chars[i];
       if (ch === SUB_Y) subscript = 'y';
       else if (ch === SUB_R) subscript = 'r';
       else if (ch === SUB_L) subscript = 'l';
       else if (ch === SUB_W) subscript = 'w';
-      else nonSub.push(ch);
+      else headCons.push(JOINED_TO_ROOT[ch] || ch);
     }
-    chars = nonSub; n = chars.length;
 
+    // The root is the last consonant of the head; anything before it is prefix/superscript.
+    var n = headCons.length;
     if (n === 1) {
-      root = chars[0];
+      root = headCons[0];
     } else if (n === 2) {
-      if (!SUFFIXES.has(chars[1])) {
-        // chars[1] is not a suffix letter, so it must be the root consonant.
-        if (PREFIXES.has(chars[0])) {
-          prefix = chars[0]; root = chars[1];
-        } else if (SUPERSCRIPTS.has(chars[0])) {
-          superscript = chars[0]; root = chars[1];
-        } else {
-          root = chars[0]; suffix = chars[1];
-        }
-      } else {
-        // chars[1] is a possible suffix: conservative root + suffix reading.
-        root = chars[0]; suffix = chars[1];
-      }
-    } else if (n === 3) {
-      if (PREFIXES.has(chars[0]) && SUPERSCRIPTS.has(chars[1])) {
-        prefix = chars[0]; superscript = chars[1]; root = chars[2];
-      } else if (PREFIXES.has(chars[0]) && SUFFIXES.has(chars[2])) {
-        prefix = chars[0]; root = chars[1]; suffix = chars[2];
-      } else if (SUFFIXES.has(chars[2])) {
-        superscript = chars[0]; root = chars[1]; suffix = chars[2];
-      } else {
-        root = chars[0]; suffix = chars[1]; post_suffix = chars[2];
-      }
-    } else if (n >= 4) {
-      prefix = chars[0]; superscript = chars[1]; root = chars[2]; suffix = chars[3];
-      if (n > 4) post_suffix = chars[4];
+      if (PREFIXES.has(headCons[0])) { prefix = headCons[0]; root = headCons[1]; }
+      else if (SUPERSCRIPTS.has(headCons[0])) { superscript = headCons[0]; root = headCons[1]; }
+      else { root = headCons[1]; }
+    } else if (n >= 3) {
+      prefix = headCons[0]; superscript = headCons[1]; root = headCons[2];
     }
 
     return { raw: syl, prefix: prefix, super: superscript, root: root, sub: subscript, vowel: vowel, suffix: suffix, post: post_suffix };
