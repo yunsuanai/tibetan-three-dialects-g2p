@@ -83,7 +83,7 @@ const res = generate('ཁྱོད་རང་གང་དུ་ཡོད།');
 console.log(res.utsang.join('\n'));  // Ü-Tsang lexicon lines
 ```
 
-> **GitHub Pages:** a ready-made workflow ([`.github/workflows/pages.yml`](.github/workflows/pages.yml)) publishes the bilingual demo automatically. One-time setup: in the repository, set *Settings → Pages → Source* to **GitHub Actions**.
+> **GitHub Pages:** the demo is published at <https://Khepa-Nyima.github.io/tibetan-three-dialects-g2p/> (served directly from the `main` branch).
 
 ---
 
@@ -173,7 +173,7 @@ Contributions that improve rule coverage or add lexical exceptions are very welc
 ├── test/
 │   └── smoke.js                   # Worked-example smoke test
 ├── .github/
-│   └── workflows/                 # CI and GitHub Pages deployment
+│   └── workflows/                 # CI (smoke test)
 ├── docs/
 │   ├── background.md              # Tibetan TTS landscape and why G2P matters
 │   ├── phonology.md               # Tibetan writing system and the three dialect phonologies

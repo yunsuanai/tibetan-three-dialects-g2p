@@ -83,7 +83,7 @@ const res = generate('ཁྱོད་རང་གང་དུ་ཡོད།');
 console.log(res.utsang.join('\n'));  // 卫藏词典行
 ```
 
-> **GitHub Pages：** 已提供现成工作流（[`.github/workflows/pages.yml`](.github/workflows/pages.yml)），可自动发布中英对照演示。一次性设置：在仓库 *Settings → Pages → Source* 选择 **GitHub Actions**。
+> **GitHub Pages：** 演示已发布在 <https://Khepa-Nyima.github.io/tibetan-three-dialects-g2p/>（从 `main` 分支直接托管）。
 
 ---
 
@@ -173,7 +173,7 @@ console.log(res.utsang.join('\n'));  // 卫藏词典行
 ├── test/
 │   └── smoke.js                   # 示例冒烟测试
 ├── .github/
-│   └── workflows/                 # CI 与 GitHub Pages 部署
+│   └── workflows/                 # CI（冒烟测试）
 ├── docs/
 │   ├── background.md              # 藏语 TTS 现状与 G2P 的重要性
 │   ├── phonology.md               # 藏文书写系统与三大方言音系
