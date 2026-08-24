@@ -7,7 +7,7 @@ abstract: >-
   three major dialect groups — Ü-Tsang (Lhasa), Khams (Dergé), and Amdo (Labrang).
 authors:
   - family-names: "Khepa-Nyima"
-version: 0.1.0
+version: 3.7.0
 date-released: 2026-08-23
 license: Apache-2.0
 url: "https://github.com/Khepa-Nyima/tibetan-three-dialects-g2p"

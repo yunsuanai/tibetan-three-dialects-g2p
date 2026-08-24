@@ -54,27 +54,27 @@ Characteristic sound changes from the written form:
 
 - **Devoicing of voiced stops/affricates**: ག→[kʰ], ད→[tʰ], བ→[pʰ], ཇ→[tɕʰ], ཛ→[tsʰ] (with tone marking the historical voicing).
 - **Prefixes and superscripts are silent** as segments but condition the tone and aspiration of the root.
-- **Palatalization** with subscript ྱ: ཀྱ/ཁྱ/གྱ→[c/cʰ], པྱ/ཕྱ/བྱ/མྱ→[tɕ/tɕʰ].
-- **Retroflexion** with subscript ྲ: ཀྲ/ཏྲ/པྲ etc.→[ʈ/ʈʰ].
+- **Palatalization** with subscript ྱ: ཀྱ/ཁྱ/གྱ→[tɕ/tɕʰ], པྱ/ཕྱ→[tɕ/tɕʰ], མྱ→[ɲ].
+- **Retroflexion** with subscript ྲ: ཀྲ/ཏྲ/པྲ etc.→[ʈʂ/ʈʂʰ] (retroflex affricate); སྲ→[s], ཧྲ→[ʂʰ].
 - **Coda-driven umlaut and nasalization**: suffixes ད ན ལ ས front/round vowels (a→ɛ, o→ø, u→y) and ན adds nasalization; ག ད ས produce glottal codas [ʔ].
 
 ### 2.2 Khams (ཁམས) — Dergé
 
 Khams is **tonal** but phonologically intermediate between Ü-Tsang and Amdo. Relative to Lhasa:
 
-- Tone is typically a simpler **high/low** contrast (here written 55/13, with 53/33 before voiced codas).
+- Tone is a **high/low** contrast (here written 55/53/13/31; checked syllables take 53/31).
 - Some historical clusters are retained to varying degrees; the tool treats prefixes/superscripts as contributing aspiration rather than full segments.
 - Subscript ྱ yields [tɕ]-type palatals and ྲ yields retroflex [ʈʂ]-type affricates.
-- Coda-driven umlaut is present but more limited (a→ɛ, o→ø, u→y before ད ན ས).
+- Coda-driven umlaut is present but limited to a→ɛ before ད ན ས.
 
 ### 2.3 Amdo (ཨ་མདོ) — Labrang
 
 Amdo is **non-tonal**: it uses stress/pitch-accent, not phonemic tone, so no tone digits appear in its output. It is also the most conservative dialect:
 
 - **Voiced stops are retained**: ག→[ɡ], ད→[d], བ→[b], ཇ→[dʑ], ཛ→[dz].
-- **Prefixes and superscripts are pronounced**: ག→[ɣ], ད→[d], བ→[v], མ→[m], འ→[ʁ]; ར→[r], ལ→[l], ས→[s].
-- Subscript ྱ adds [j], ྲ adds [ʐ], ླ surfaces as [l].
-- Suffixes surface as audible codas: ག→[k], ང→[ŋ], ད→[t], ན→[n], བ→[p], མ→[m], ར→[r], ལ→[l], ས→[x].
+- **Prefixes and superscripts are pronounced**: ག/ད→[x] before voiceless, [ɣ] before voiced; བ→[f]/[v]; མ→[m]; འ→prenasalization [m/ŋ/ɲ/n]; ར→[r], ལ→[l], ས→[s].
+- Subscript ྱ yields palatals [c/cʰ/ɟ] (མྱ→[ɲ]), ྲ yields [ʈʂ/ʈʂʰ/ɖʐ] or [p ʂ]/[b ʐ], ླ surfaces as [ɬ]/[l] (ཀླ→[k ɬ], ཟླ→[z d] etc.).
+- Suffixes surface as audible codas: ག→[ɣ], ང→[ŋ], ད→[t], ན→[n], བ→[p], མ→[m], ར→[r], ལ→[l], ས→[s].
 
 The Amdo mapping is therefore far closer to a transparent letter-to-sound reading — a useful property, since Amdo speech data is the scarcest and a rule-based front-end has the most leverage there.
 
@@ -142,27 +142,27 @@ This is exactly the design of `tibetan-three-dialects-g2p`.
 
 - **浊塞音/塞擦音清化**：ག→[kʰ]、ད→[tʰ]、བ→[pʰ]、ཇ→[tɕʰ]、ཛ→[tsʰ]（历史浊音由声调标记）。
 - **前置字、上加字作为音段不发音**，但决定基字的声调与送气。
-- 下加字 ྱ 引起**腭化**：ཀྱ/ཁྱ/གྱ→[c/cʰ]，པྱ/ཕྱ/བྱ/མྱ→[tɕ/tɕʰ]。
-- 下加字 ྲ 引起**卷舌化**：ཀྲ/ཏྲ/པྲ 等→[ʈ/ʈʰ]。
+- 下加字 ྱ 引起**腭化**：ཀྱ/ཁྱ/གྱ→[tɕ/tɕʰ]，པྱ/ཕྱ→[tɕ/tɕʰ]，མྱ→[ɲ]。
+- 下加字 ྲ 引起**卷舌化**：ཀྲ/ཏྲ/པྲ 等→[ʈʂ/ʈʂʰ]（卷舌塞擦音）；སྲ→[s]，ཧྲ→[ʂʰ]。
 - **韵尾引起的变音与鼻化**：后加字 ད ན ལ ས 使元音前化/圆唇化（a→ɛ、o→ø、u→y），ན 增加鼻化；ག ད ས 产生喉塞韵尾 [ʔ]。
 
 #### 2.2 康巴（ཁམས）——德格
 
 康巴**有声调**，但音系上介于卫藏与安多之间。相对拉萨：
 
-- 声调通常是更简单的**高/低**对立（本工具写作 55/13，浊韵尾前为 53/33）。
+- 声调是**高/低**对立（本工具写作 55/53/13/31；促声韵尾取 53/31）。
 - 部分历史复辅音在不同程度上保留；本工具把前置字/上加字处理为对基字送气的贡献，而非完整音段。
 - 下加字 ྱ 产生 [tɕ] 类腭音，ྲ 产生 [ʈʂ] 类卷舌塞擦音。
-- 韵尾引起的变音存在但更有限（ད ན ས 前 a→ɛ、o→ø、u→y）。
+- 韵尾引起的变音存在但仅限 ད ན ས 前 a→ɛ。
 
 #### 2.3 安多（ཨ་མདོ）——拉卜楞
 
 安多**无声调**：以重音/音高重音而非音位声调，故其输出不含声调数字。它也是最保守的方言：
 
 - **浊塞音保留**：ག→[ɡ]、ད→[d]、བ→[b]、ཇ→[dʑ]、ཛ→[dz]。
-- **前置字、上加字发音**：ག→[ɣ]、ད→[d]、བ→[v]、མ→[m]、འ→[ʁ]；ར→[r]、ལ→[l]、ས→[s]。
-- 下加字 ྱ 加 [j]，ྲ 加 [ʐ]，ླ 表现为 [l]。
-- 后加字表现为可听见的韵尾：ག→[k]、ང→[ŋ]、ད→[t]、ན→[n]、བ→[p]、མ→[m]、ར→[r]、ལ→[l]、ས→[x]。
+- **前置字、上加字发音**：ག/ད→清前 [x]、浊前 [ɣ]；བ→[f]/[v]；མ→[m]；འ→前鼻化 [m/ŋ/ɲ/n]；ར→[r]、ལ→[l]、ས→[s]。
+- 下加字 ྱ 产生腭音 [c/cʰ/ɟ]（མྱ→[ɲ]），ྲ 产生 [ʈʂ/ʈʂʰ/ɖʐ] 或 [p ʂ]/[b ʐ]，ླ 表现为 [ɬ]/[l]（ཀླ→[k ɬ]、ཟླ→[z d] 等）。
+- 后加字表现为可听见的韵尾：ག→[ɣ]、ང→[ŋ]、ད→[t]、ན→[n]、བ→[p]、མ→[m]、ར→[r]、ལ→[l]、ས→[s]。
 
 因此安多的映射远更接近透明的“字母到读音”直读——这是一个很有用的性质，因为安多语音数据最稀缺，规则式前端在那里最能发挥杠杆作用。
 

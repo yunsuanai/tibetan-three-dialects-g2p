@@ -2,7 +2,7 @@
 
 > 中文版见下方「中文版」一节。 / A Chinese version is provided in the "中文版" section below.
 
-This document specifies exactly what [`tibetan-three-dialects-g2p.js`](../tibetan-three-dialects-g2p.js) computes. It is the normative reference for anyone auditing, correcting, or extending the rules. The symbols used are a simplified, IPA-like phone set (not a claim about any single phonological analysis).
+This document specifies exactly what [`tibetan-three-dialects-g2p.js`](../tibetan-three-dialects-g2p.js) (v3.7.0) computes. It is the normative reference for anyone auditing, correcting, or extending the rules. The symbols used are a simplified, IPA-like phone set (not a claim about any single phonological analysis).
 
 ---
 
@@ -38,7 +38,10 @@ The 30 root consonants:
 ཀ ཁ ག ང ཅ ཆ ཇ ཉ ཏ ཐ ད ན པ ཕ བ མ ཙ ཚ ཛ ཝ ཞ ཟ འ ཡ ར ལ ཤ ས ཧ ཨ
 ```
 
-The parser peels the post-suffix, suffix, and vowel sign from the right, then parses the remaining head (prefix, superscript, root, subscript) from the left, with a backtrack when nothing remains. Subjoined (stacked) consonant forms are normalized to their full root forms during this process.
+The parser peels the post-suffix, suffix, and vowel sign from the right, then parses the remaining head (prefix, superscript, root, subscript) from the left, with a backtrack when nothing remains. Two rules are central:
+
+- **Subjoined-root normalization** — stacked (subjoined) root forms (U+0F90 range) are normalized to their full root forms; the medial subscripts ྱ ྲ ླ are recorded separately, and ྭ (wazur) is recorded on its own so a leading medial is never overwritten.
+- **Two-letter disambiguation ("suffix-first" rule)** — for a two-consonant syllable with no vowel sign, if the second letter is a suffix letter it is read as **root + suffix**; the closed set དབ / འག / འད / འབ / མག is read as **prefix + root**; otherwise a leading prefix letter yields **prefix + root**.
 
 ---
 
@@ -47,17 +50,21 @@ The parser peels the post-suffix, suffix, and vowel sign from the right, then pa
 **Consonants** (union across all three dialects):
 
 ```
-k kʰ ɡ ŋ  c cʰ  tɕ tɕʰ dʑ ɲ  t tʰ d n  p pʰ b m
-ts tsʰ dz  w  ʈ ʈʰ ʈʂ ʈʂʰ  ɕ ʑ s z  h  ʔ  r l  j
-ɣ v ʁ ʐ x
+k kʰ ɡ  c cʰ ɟ  t tʰ d  p pʰ b  ʔ
+tɕ tɕʰ dʑ  ts tsʰ dz  ʈʂ ʈʂʰ ɖʐ  pɕ pɕʰ
+ŋ ɲ n m
+ɕ ʑ ʂ ʂʰ s z  h ɦ x ɣ  f v ɬ
+w j  r l ʐ
 ```
 
-**Vowels**: `a i u e o` plus umlauted `ɛ ø y`; nasalized variants carry a tilde (`ã ẽ ĩ õ ũ ɛ̃ ø̃ ỹ`).
+**Vowels**: `a i u e o` plus umlauted `ɛ ø y`; nasalized variants carry a tilde (`ã ẽ ĩ õ ũ ɛ̃ ø̃ ỹ`); a length mark `ː` marks compensatory lengthening; `ʔ` is emitted as a glottal coda (checked tone).
 
 **Tone digits** are appended to the vowel phone:
 - Ü-Tsang: `55 53 14 12`
-- Khams: `55 53 13 33`
+- Khams: `55 53 13 31`
 - Amdo: none (non-tonal).
+
+The `generate(text, { toneFormat: 'chao' })` option emits Chao tone letters instead (e.g. `a˥˥`, `a˩˨`).
 
 ---
 
@@ -92,8 +99,8 @@ Amdo maps roots directly to phones (no tone/aspiration flags):
 ```
 ཀ k   ཁ kʰ  ག ɡ   ང ŋ   ཅ tɕ  ཆ tɕʰ ཇ dʑ  ཉ ɲ
 ཏ t   ཐ tʰ  ད d   ན n   པ p   ཕ pʰ  བ b   མ m
-ཙ ts  ཚ tsʰ ཛ dz  ཝ w   ཞ ʑ   ཟ z   འ ʁ   ཡ j
-ར r   ལ l   ཤ ɕ   ས s   ཧ h   ཨ ʔ
+ཙ ts  ཚ tsʰ ཛ dz  ཝ w   ཞ ʑ   ཟ z   འ ɦ   ཡ j
+ར r   ལ l   ཤ ɕ   ས s   ཧ x   ཨ ʔ
 ```
 
 ---
@@ -102,32 +109,40 @@ Amdo maps roots directly to phones (no tone/aspiration flags):
 
 ### 5.1 Ü-Tsang (Lhasa)
 
-1. **Prefix/superscript neutralization** — if a prefix or superscript is present and the root is low-tone, the syllable becomes high-tone and aspiration is removed (`kʰ→k`, etc.).
-2. **Subscript ྱ (palatalization)** — ཀ ཁ ག → `c/cʰ`; པ ཕ བ མ → `tɕ/tɕʰ` (aspiration retained only when no prefix/superscript).
-3. **Subscript ྲ (retroflexion)** — ཀ ཁ ག ཏ ཐ ད པ ཕ བ → `ʈ/ʈʰ` (same aspiration condition).
-4. **Coda-driven umlaut** — suffix ད ན ལ ས triggers `a→ɛ, o→ø, u→y`; suffix ན adds nasalization `˜`.
-5. **Suffix codas** — ག→`ʔ`, ང→`ŋ`, མ→`m`, བ→`p`, ར→`r`; ད ས→`ʔ` (checked). The glottal coda is **not** emitted as a segment; it is signaled by the checked tone.
-6. **Tone** —
-   - high: `55` (open), `53` (checked `ʔ`/`p`)
-   - low: `14` (open), `12` (checked `ʔ`/`p`)
+1. **ལྷ ligature** — superscript ལ + root ཧ → `ɬ` (high tone).
+2. **དབ / དབྱ / དབྲ weakening** — prefix ད + root བ → `w` / `j` / `ʈʂ` (high tone, unaspirated).
+3. **Prefix/superscript neutralization** — prefix འ de-aspirates a low-tone root but **keeps the low tone**; any other prefix/superscript de-aspirates and **raises the tone**. Native aspirated roots (ཁ ཐ ཕ) keep aspiration.
+4. **Subscript ྱ** — ཀ ཁ ག → `tɕ/tɕʰ`; པ ཕ → `tɕ/tɕʰ`; བ → `tɕ` (with head) / `tɕʰ` (isolated); མ → `ɲ`.
+5. **Subscript ྲ** — ཀ ཁ ག ཏ ཐ ད པ ཕ བ → `ʈʂ/ʈʂʰ` (retroflex affricate); ས → `s`; ཧ → `ʂʰ`.
+6. **Subscript ླ** — ཟ → `t` (high tone); otherwise → `l`.
+7. **Coda-driven umlaut** — suffix ད ན ལ ས triggers `a→ɛ, o→ø, u→y`; ན adds nasalization + length `ː`; ད ས add glottal `ʔ`; ལ adds length `ː`.
+8. **Other codas** — ག→`ʔ`, ང→`ŋ`, མ→`m`, བ→`p`, ར→`ː`, འ→`ː`.
+9. **Tone** — high `55` (open) / `53` (checked `ʔ`/`p`); low `14` (open) / `12` (checked). The glottal coda `ʔ` **is** emitted as a segment.
 
 ### 5.2 Khams (Dergé)
 
-1. Prefix/superscript contribute a pre-aspiration `ʰ`.
-2. **Subscript ྱ** — `k`/`p`-initial roots → `tɕ`; otherwise append `j`.
-3. **Subscript ྲ** — → `ʈʂ/ʈʂʰ` (aspirated roots).
-4. **Umlaut** — `a→ɛ, o→ø, u→y` before ད ན ས.
-5. **Tone** — high `55`/low `13`; before ག བ ད → high `53`/low `33`.
-6. **Coda** — ང→`ŋ`, མ→`m`, ར→`r`, ལ→`l`.
+1. Root ཧ → `x` (velar fricative).
+2. **ལྷ ligature** → `ɬ` (high tone).
+3. **དབ / དབྱ / དབྲ weakening** → `w` / `j` / `ʈʂ` (high tone).
+4. **Prefix/superscript neutralization** — as Ü-Tsang (no standalone pre-aspiration phone; aspiration merges into the onset).
+5. **Subscript ྱ** — ཀ ཁ ག → `tɕ/tɕʰ`; པ ཕ བ → `pɕ/pɕʰ`; མ → `ɲ`.
+6. **Subscript ྲ** — ཀ ཁ ག ཏ ཐ ད པ ཕ བ → `ʈʂ/ʈʂʰ`; ས → `s`; ཧ → `ʂʰ`.
+7. **Subscript ླ** — ཟ → `t` (high tone); otherwise → `l`.
+8. **Umlaut** — `a→ɛ` before ད ན ས.
+9. **Tone** — 55 / 53 / 13 / 31; checked (入声) before ག བ ད ས.
+10. **Coda** — ག→`k`, ང→`ŋ`, བ→`p`, མ→`m`, ར→`r`, ལ→`l`, ན→`n`, ད→`t`, ས→`ʔ`.
 
 ### 5.3 Amdo (Labrang, non-tonal)
 
-1. **Prefixes** surface: ག→`ɣ`, ད→`d`, བ→`v`, མ→`m`, འ→`ʁ`.
-2. **Superscripts** surface: ར→`r`, ལ→`l`, ས→`s`.
-3. **Root** from the Amdo table (voiced retained).
-4. **Subscript** — ྱ adds `j`, ྲ adds `ʐ`, ླ → `l`.
-5. **Suffixes** surface: ག→`k`, ང→`ŋ`, ད→`t`, ན→`n`, བ→`p`, མ→`m`, ར→`r`, ལ→`l`, ས→`x`.
-6. **No tone digits**.
+1. **ལྷ ligature** → `ɬ`.
+2. **དབ / དབྱ / དབྲ weakening** — prefix ད/ག + root བ → `v` / `j` / `v ʐ`.
+3. **Prefixes** (assimilate to the immediately following consonant) — འ → prenasalization `m/ŋ/ɲ/n` by place; ག/ད → `x` before voiceless, `ɣ` before voiced; བ → `f` before voiceless, `v` before voiced; མ → `m`.
+4. **Superscripts** surface: ར→`r`, ལ→`l`, ས→`s`.
+5. **Subscript ྱ** — ཀ ཁ ག → `c/cʰ/ɟ`; པ ཕ བ → `c/cʰ/ɟ`; མ → `ɲ`; otherwise append `j`.
+6. **Subscript ྲ** — ཀ ཁ ག ཏ ཐ ད → `ʈʂ/ʈʂʰ/ɖʐ`; པ ཕ བ → `p ʂ / pʰ ʂ / b ʐ`; ས → `ʂ`; ཧ → `ʂʰ`.
+7. **Subscript ླ** — ཀ → `k ɬ`; ག → `ɣ l`; བ → `v l`; ཟ → `z d`; ས → `ɬ`; otherwise → `l`.
+8. **Codas** — ག→`ɣ`, ང→`ŋ`, ད→`t`, ན→`n`, བ→`p`, མ→`m`, ར→`r`, ལ→`l`, ས→`s`; post-suffix ས→`s`, ད→`t`.
+9. **No tone digits**. Clusters are split into atomic phones (MFA-alignable).
 
 ---
 
@@ -140,27 +155,27 @@ Worked example — input `ཁྱོད་རང་གང་དུ་ཡོད།
 **Ü-Tsang (Lhasa):**
 
 ```
-ཁྱོད	cʰ ø53
+ཁྱོད	tɕʰ ø53 ʔ
 རང	r a14 ŋ
 གང	kʰ a14 ŋ
 དུ	tʰ u14
-ཡོད	j ø12
+ཡོད	j ø12 ʔ
 ```
 
 **Khams (Dergé):**
 
 ```
-ཁྱོད	tɕ ø53
+ཁྱོད	tɕʰ o53 t
 རང	r a13 ŋ
 གང	kʰ a13 ŋ
 དུ	tʰ u13
-ཡོད	j ø33
+ཡོད	j o31 t
 ```
 
 **Amdo (Labrang, non-tonal):**
 
 ```
-ཁྱོད	kʰj o t
+ཁྱོད	cʰ o t
 རང	r a ŋ
 གང	ɡ a ŋ
 དུ	d u
@@ -173,7 +188,7 @@ The three panels can be concatenated directly into one MFA `.txt` dictionary fil
 
 ## 7. Known limitations of the rules
 
-- The parser extracts suffix(es) and the vowel from the right, then parses the head from the left; the vowel position disambiguates most cases, and subjoined (stacked) forms are normalized. A residual ambiguity remains only for two-consonant syllables **without a written vowel** whose final letter is a suffix letter — e.g. མད (prefix མ + root ད) vs དག (root ད + suffix ག) — which are conservatively read as root + suffix; a lexicon is needed to resolve those.
+- Two-letter syllables without a written vowel are resolved by the "suffix-first" rule plus a closed exception set, so the earlier ambiguity is largely removed; residual cases remain only where a form can be read as either prefix+root or root+suffix outside the exception list — a lexicon is needed to resolve those.
 - Lexical exceptions and loanwords are not modeled.
 - No cross-syllable sandhi, and no handling of ་ -attached particles' contextual readings.
 - Amdo stress and vowel quality are simplified; Ü-Tsang/Khams tone digits are a reduced Chao scheme, not a full prosodic transcription.
@@ -208,21 +223,26 @@ See the README [limitations](../README.md#limitations-and-disclaimer) section.
 
 三十个基字：`ཀ ཁ ག ང ཅ ཆ ཇ ཉ ཏ ཐ ད ན པ ཕ བ མ ཙ ཚ ཛ ཝ ཞ ཟ འ ཡ ར ལ ཤ ས ཧ ཨ`。
 
-解析器从右往左依次剥取再后加字、后加字与元音符号，再从左往右解析剩余的音节头（前加字、上加字、基字、下加字），无剩余时回溯；连体（堆叠）辅音形式会还原为标准基字。
+解析器从右往左依次剥取再后加字、后加字与元音符号，再从左往右解析剩余音节头，无剩余时回溯。两条关键规则：
+
+- **下加根字归一化**——堆叠的下加根字（U+0F90 段）还原为完整基字；介音 ྱ ྲ ླ 单独记录，ྭ（wazur）独立记录、不覆盖主介音。
+- **双字母消歧（后加字优先铁律）**——无元音符号的双辅音音节，第二字属后加字时按「基字+后加字」读；封闭特例 དབ / འག / འད / འབ / མག 按「前加字+基字」读；其余首字为前加字时按「前加字+基字」读。
 
 ### 3. 音素表
 
 **辅音**（三方言之并集）：
 
 ```
-k kʰ ɡ ŋ  c cʰ  tɕ tɕʰ dʑ ɲ  t tʰ d n  p pʰ b m
-ts tsʰ dz  w  ʈ ʈʰ ʈʂ ʈʂʰ  ɕ ʑ s z  h  ʔ  r l  j
-ɣ v ʁ ʐ x
+k kʰ ɡ  c cʰ ɟ  t tʰ d  p pʰ b  ʔ
+tɕ tɕʰ dʑ  ts tsʰ dz  ʈʂ ʈʂʰ ɖʐ  pɕ pɕʰ
+ŋ ɲ n m
+ɕ ʑ ʂ ʂʰ s z  h ɦ x ɣ  f v ɬ
+w j  r l ʐ
 ```
 
-**元音**：`a i u e o` 加变音 `ɛ ø y`；鼻化变体带波浪号（`ã ẽ ĩ õ ũ ɛ̃ ø̃ ỹ`）。
+**元音**：`a i u e o` 加变音 `ɛ ø y`；鼻化变体带波浪号（`ã ẽ ĩ õ ũ ɛ̃ ø̃ ỹ`）；长音标记 `ː` 表补偿性延长；喉塞韵尾 `ʔ` 作为独立音段输出。
 
-**声调数字**附加在元音音素上：卫藏 `55 53 14 12`；康巴 `55 53 13 33`；安多无声调。
+**声调数字**附加在元音音素上：卫藏 `55 53 14 12`；康巴 `55 53 13 31`；安多无声调。`generate(text, { toneFormat: 'chao' })` 可输出赵元任五度调号（如 `a˥˥`）。
 
 ### 4. 基字表
 
@@ -251,38 +271,48 @@ ts tsʰ dz  w  ʈ ʈʰ ʈʂ ʈʂʰ  ɕ ʑ s z  h  ʔ  r l  j
 ```
 ཀ k   ཁ kʰ  ག ɡ   ང ŋ   ཅ tɕ  ཆ tɕʰ ཇ dʑ  ཉ ɲ
 ཏ t   ཐ tʰ  ད d   ན n   པ p   ཕ pʰ  བ b   མ m
-ཙ ts  ཚ tsʰ ཛ dz  ཝ w   ཞ ʑ   ཟ z   འ ʁ   ཡ j
-ར r   ལ l   ཤ ɕ   ས s   ཧ h   ཨ ʔ
+ཙ ts  ཚ tsʰ ཛ dz  ཝ w   ཞ ʑ   ཟ z   འ ɦ   ཡ j
+ར r   ལ l   ཤ ɕ   ས s   ཧ x   ཨ ʔ
 ```
 
 ### 5. 分方言规则
 
 #### 5.1 卫藏（拉萨）
 
-1. 有前置字/上加字且基字为低调时，音节变高调并去送气（`kʰ→k` 等）。
-2. 下加字 ྱ（腭化）：ཀ ཁ ག → `c/cʰ`；པ ཕ བ མ → `tɕ/tɕʰ`（仅无前置/上加时保留送气）。
-3. 下加字 ྲ（卷舌化）：ཀ ཁ ག ཏ ཐ ད པ ཕ བ → `ʈ/ʈʰ`（送气条件同上）。
-4. 韵尾变音：后加字 ད ན ལ ས 触发 `a→ɛ, o→ø, u→y`；ན 加鼻化 `˜`。
-5. 后加字韵尾：ག→`ʔ`、ང→`ŋ`、མ→`m`、བ→`p`、ར→`r`；ད ས→`ʔ`（促声）。喉塞韵尾不作为音段输出，而以促声调表示。
-6. 声调：高 `55`（开）/`53`（促 `ʔ`/`p`）；低 `14`（开）/`12`（促）。
+1. ལྷ 合写（上加 ལ + 基字 ཧ）→ `ɬ`（高调）。
+2. དབ / དབྱ / དབྲ 声母弱化（前加 ད + 基字 བ）→ `w` / `j` / `ʈʂ`（高调、不送气）。
+3. 前置/上加中和律：前加 འ 去送气但**保低调**；其余前加/上加字去送气并**升高调**；原生送气基字 ཁ ཐ ཕ 保留送气。
+4. 下加 ྱ：ཀ ཁ ག → `tɕ/tɕʰ`；པ ཕ → `tɕ/tɕʰ`；བ → `tɕ`（有头）/ `tɕʰ`（孤立）；མ → `ɲ`。
+5. 下加 ྲ：ཀ ཁ ག ཏ ཐ ད པ ཕ བ → `ʈʂ/ʈʂʰ`（卷舌塞擦音）；ས → `s`；ཧ → `ʂʰ`。
+6. 下加 ླ：ཟ → `t`（高调）；其余 → `l`。
+7. 韵尾变音：ད ན ལ ས 触发 `a→ɛ, o→ø, u→y`；ན 加鼻化并延长 `ː`；ད ས 加喉塞 `ʔ`；ལ 加延长 `ː`。
+8. 其余韵尾：ག→`ʔ`、ང→`ŋ`、མ→`m`、བ→`p`、ར→`ː`、འ→`ː`。
+9. 声调：高 `55`（开）/ `53`（促）；低 `14`（开）/ `12`（促）。喉塞韵尾 `ʔ` **作为音段输出**。
 
 #### 5.2 康巴（德格）
 
-1. 前置字/上加字贡献前送气 `ʰ`。
-2. 下加字 ྱ：`k`/`p` 起首基字 → `tɕ`；否则加 `j`。
-3. 下加字 ྲ：→ `ʈʂ/ʈʂʰ`（送气基字）。
-4. 变音：ད ན ས 前 `a→ɛ, o→ø, u→y`。
-5. 声调：高 `55`/低 `13`；ག བ ད 前 → 高 `53`/低 `33`。
-6. 韵尾：ང→`ŋ`、མ→`m`、ར→`r`、ལ→`l`。
+1. 基字 ཧ → `x`。
+2. ལྷ 合写 → `ɬ`（高调）。
+3. དབ / དབྱ / དབྲ 弱化 → `w` / `j` / `ʈʂ`（高调）。
+4. 前置/上加中和律：同卫藏（不再输出孤立前送气音素 `ʰ`，送气并入声母）。
+5. 下加 ྱ：ཀ ཁ ག → `tɕ/tɕʰ`；པ ཕ བ → `pɕ/pɕʰ`；མ → `ɲ`。
+6. 下加 ྲ：ཀ ཁ ག ཏ ཐ ད པ ཕ བ → `ʈʂ/ʈʂʰ`；ས → `s`；ཧ → `ʂʰ`。
+7. 下加 ླ：ཟ → `t`（高调）；其余 → `l`。
+8. 变音：ད ན ས 前 `a→ɛ`。
+9. 声调：`55 / 53 / 13 / 31`；ག བ ད ས 前为入声（促调）。
+10. 韵尾：ག→`k`、ང→`ŋ`、བ→`p`、མ→`m`、ར→`r`、ལ→`l`、ན→`n`、ད→`t`、ས→`ʔ`。
 
 #### 5.3 安多（拉卜楞，无声调）
 
-1. 前置字发音：ག→`ɣ`、ད→`d`、བ→`v`、མ→`m`、འ→`ʁ`。
-2. 上加字发音：ར→`r`、ལ→`l`、ས→`s`。
-3. 基字取安多表（保留浊音）。
-4. 下加字：ྱ 加 `j`，ྲ 加 `ʐ`，ླ → `l`。
-5. 后加字发音：ག→`k`、ང→`ŋ`、ད→`t`、ན→`n`、བ→`p`、མ→`m`、ར→`r`、ལ→`l`、ས→`x`。
-6. 无声调数字。
+1. ལྷ 合写 → `ɬ`。
+2. དབ / དབྱ / དབྲ 弱化（前加 ད/ག + 基字 བ）→ `v` / `j` / `v ʐ`。
+3. 前加字（按「紧邻第一辅音」清浊同化）：འ → 前鼻化 `m/ŋ/ɲ/n`；ག/ད → 清前 `x`、浊前 `ɣ`；བ → 清前 `f`、浊前 `v`；མ → `m`。
+4. 上加字：ར→`r`、ལ→`l`、ས→`s`。
+5. 下加 ྱ：ཀ ཁ ག → `c/cʰ/ɟ`；པ ཕ བ → `c/cʰ/ɟ`；མ → `ɲ`；其余加 `j`。
+6. 下加 ྲ：ཀ ཁ ག ཏ ཐ ད → `ʈʂ/ʈʂʰ/ɖʐ`；པ ཕ བ → `p ʂ / pʰ ʂ / b ʐ`；ས → `ʂ`；ཧ → `ʂʰ`。
+7. 下加 ླ：ཀ → `k ɬ`；ག → `ɣ l`；བ → `v l`；ཟ → `z d`；ས → `ɬ`；其余 → `l`。
+8. 韵尾：ག→`ɣ`、ང→`ŋ`、ད→`t`、ན→`n`、བ→`p`、མ→`m`、ར→`r`、ལ→`l`、ས→`s`；再后加字 ས→`s`、ད→`t`。
+9. 无声调数字；复辅音按音素级原子拆分（便于 MFA 对齐）。
 
 ### 6. 输出格式（MFA 词典）
 
@@ -293,27 +323,27 @@ ts tsʰ dz  w  ʈ ʈʰ ʈʂ ʈʂʰ  ɕ ʑ s z  h  ʔ  r l  j
 **卫藏（拉萨）：**
 
 ```
-ཁྱོད	cʰ ø53
+ཁྱོད	tɕʰ ø53 ʔ
 རང	r a14 ŋ
 གང	kʰ a14 ŋ
 དུ	tʰ u14
-ཡོད	j ø12
+ཡོད	j ø12 ʔ
 ```
 
 **康巴（德格）：**
 
 ```
-ཁྱོད	tɕ ø53
+ཁྱོད	tɕʰ o53 t
 རང	r a13 ŋ
 གང	kʰ a13 ŋ
 དུ	tʰ u13
-ཡོད	j ø33
+ཡོད	j o31 t
 ```
 
 **安多（拉卜楞，无声调）：**
 
 ```
-ཁྱོད	kʰj o t
+ཁྱོད	cʰ o t
 རང	r a ŋ
 གང	ɡ a ŋ
 དུ	d u
@@ -324,7 +354,7 @@ ts tsʰ dz  w  ʈ ʈʰ ʈʂ ʈʂʰ  ɕ ʑ s z  h  ʔ  r l  j
 
 ### 7. 规则的已知局限
 
-- 解析器从右往左剥取后加字与元音，再从左往右解析音节头，元音位置可消解大部分歧义，连体形式也已归一化；仅在**无元音符号**的两辅音音节、且末字母为后加字时仍有歧义（如 མད 是“前加字 མ + 基字 ད”，དག 是“基字 ད + 后加字 ག”），暂按“基字+后加字”保守处理，需借助词典才能完全消歧。
+- 无元音符号的双字母音节由「后加字优先」铁律 + 封闭特例解决，此前的歧义已大幅消除；仅当词形在特例表之外仍可两读时（前加字+基字 vs 基字+后加字）需要词典消歧。
 - 未建模词汇例外与借词。
 - 无跨音节连读，也不处理 `་` 所连虚词的语境读音。
 - 安多重音与元音音质作了简化；卫藏/康巴声调数字为简化五度制，非完整韵律转写。

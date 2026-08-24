@@ -105,21 +105,21 @@ Example for `ཁྱོད་རང་གང་དུ་ཡོད།` (actual too
 
 ```
 # Ü-Tsang (Lhasa)
-ཁྱོད	cʰ ø53
+ཁྱོད	tɕʰ ø53 ʔ
 རང	r a14 ŋ
 གང	kʰ a14 ŋ
 དུ	tʰ u14
-ཡོད	j ø12
+ཡོད	j ø12 ʔ
 
 # Khams (Dergé)
-ཁྱོད	tɕ ø53
+ཁྱོད	tɕʰ o53 t
 རང	r a13 ŋ
 གང	kʰ a13 ŋ
 དུ	tʰ u13
-ཡོད	j ø33
+ཡོད	j o31 t
 
 # Amdo (Labrang, non-tonal)
-ཁྱོད	kʰj o t
+ཁྱོད	cʰ o t
 རང	r a ŋ
 གང	ɡ a ŋ
 དུ	d u

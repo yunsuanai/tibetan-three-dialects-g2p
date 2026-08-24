@@ -1,6 +1,6 @@
 {
   "name": "tibetan-three-dialects-g2p",
-  "version": "0.1.0",
+  "version": "3.7.0",
   "description": "藏文三大方言 G2P / Rule-based grapheme-to-phoneme (G2P) for the three major Tibetan dialects (Ü-Tsang, Khams, Amdo) with Montreal Forced Aligner (MFA) lexicon output.",
   "keywords": [
     "tibetan",
